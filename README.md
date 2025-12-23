@@ -2,6 +2,8 @@
 
 A CLI tool for managing Git worktrees with a focus on opening them in the Cursor editor.
 
+**New to worktrees?** Check out the [Quick Start Guide](QUICKSTART.md) for practical examples and common workflows.
+
 ## Features
 
 - **Interactive TUI**: Fuzzy-searchable selection when arguments are omitted
@@ -10,6 +12,9 @@ A CLI tool for managing Git worktrees with a focus on opening them in the Cursor
 - **Stash-aware**: Gracefully handles dirty worktrees with stash/pop workflow
 - **PR Integration**: Create worktrees directly from GitHub PRs or GitLab MRs
 - **Setup Automation**: Run setup scripts automatically with trust-based security
+- **Trust Mode**: Skip confirmation prompts for automated workflows
+- **Subfolder Organization**: Keep worktrees organized in dedicated subdirectories
+- **Status Overview**: Quick status check of all worktrees with git state
 
 ## Installation
 
@@ -128,6 +133,38 @@ Shows all worktrees with their status:
 - Branch name or detached HEAD state
 - Locked/prunable status indicators
 - Main worktree marker
+
+### Show worktree status
+
+```bash
+wt status
+```
+
+Displays comprehensive status information for all worktrees:
+- **Git status**: Clean vs dirty (uncommitted changes)
+- **Tracking status**: Ahead/behind upstream branch
+- **Indicators**: Main worktree, locked, prunable status
+- **Branch info**: Current branch or detached HEAD state
+
+Example output:
+```bash
+$ wt status
+Worktree Status:
+
+main → /Users/me/projects/myapp [main] [clean] [up-to-date]
+feature/auth → /Users/me/projects/myapp-worktrees/feature-auth [dirty] [ahead 2]
+feature/api → /Users/me/projects/myapp-worktrees/feature-api [clean] [no upstream]
+```
+
+Status indicators:
+- `[main]` - Main worktree
+- `[clean]` / `[dirty]` - Working tree status
+- `[up-to-date]` - In sync with upstream
+- `[ahead N]` - N commits ahead of upstream
+- `[behind N]` - N commits behind upstream
+- `[ahead N, behind M]` - Diverged from upstream
+- `[no upstream]` - No tracking branch configured
+- `[locked]` - Worktree is locked
 
 ### Remove a worktree
 
@@ -264,6 +301,53 @@ wt config get worktreepath
 
 # Clear the setting (revert to sibling directory behavior)
 wt config clear worktreepath
+```
+
+### Configure Trust Mode
+
+Skip confirmation prompts for setup scripts (useful for CI/CD and automated workflows):
+
+```bash
+# Enable trust mode
+wt config set trust true
+
+# Disable trust mode (default)
+wt config set trust false
+
+# Get current trust mode setting
+wt config get trust
+```
+
+When trust mode is enabled, `wt setup` commands will execute setup scripts without confirmation prompts.
+
+### Configure Subfolder Organization
+
+Organize worktrees in a dedicated subdirectory instead of as siblings:
+
+```bash
+# Enable subfolder mode
+wt config set subfolder true
+
+# Disable subfolder mode (default)
+wt config set subfolder false
+
+# Get current subfolder mode setting
+wt config get subfolder
+```
+
+**Without subfolder mode (default):**
+```
+my-app/                 # main repo
+my-app-feature-auth/    # worktree (sibling)
+my-app-feature-api/     # worktree (sibling)
+```
+
+**With subfolder mode:**
+```
+my-app/                 # main repo
+my-app-worktrees/
+  ├── feature-auth/     # worktree
+  └── feature-api/      # worktree
 ```
 
 **Path Resolution Priority:**
@@ -410,6 +494,57 @@ pnpm test
 # Run with coverage
 pnpm test -- --coverage
 ```
+
+## AI Assistant Integration
+
+### Claude Code Slash Command
+
+This project includes a custom slash command for Claude Code. The command is defined in `.claude/commands/worktree.md` and provides quick access to worktree management workflows.
+
+**Usage in Claude Code:**
+```
+/worktree create three parallel features for authentication, UI, and API
+```
+
+### Recommended Configuration for AI Workflows
+
+```bash
+# Headless operation (no editor auto-open)
+wt config set editor none
+
+# Skip confirmation prompts
+wt config set trust true
+
+# Organized directory structure
+wt config set subfolder true
+```
+
+### Parallel Agent Workflows
+
+The `wt` CLI is designed to work seamlessly with parallel AI agents (like Cursor's parallel agents feature):
+
+1. Each agent gets its own worktree
+2. Agents work independently without conflicts
+3. Changes are merged back when ready
+4. Setup scripts ensure consistent environments
+
+**Example workflow:**
+```bash
+# Create worktrees for parallel tasks
+wt setup task-1-auth -c
+wt setup task-2-ui -c
+wt setup task-3-api -c
+
+# Check status of all tasks
+wt status
+
+# Merge completed tasks
+wt merge task-1-auth --auto-commit --remove
+wt merge task-2-ui --auto-commit --remove
+wt merge task-3-api --auto-commit --remove
+```
+
+See the [Quick Start Guide](QUICKSTART.md) for more examples.
 
 ## License
 
