@@ -1,6 +1,7 @@
 import prompts from "prompts";
 import chalk from "chalk";
 import { getWorktrees } from "./git.js";
+import { getTrust } from "../config.js";
 /**
  * Interactive worktree selector
  *
@@ -133,7 +134,9 @@ export async function inputText(message, options = {}) {
  */
 export async function confirmCommands(commands, options = {}) {
     const { title = "The following commands will be executed:", trust = false } = options;
-    if (trust) {
+    // Check both the flag and the config setting
+    // If either is true, skip confirmation
+    if (trust || getTrust()) {
         return true;
     }
     console.log(chalk.blue(title));

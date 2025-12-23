@@ -23,6 +23,15 @@ const schema = {
         type: 'string',
         // No default - falls back to sibling directory behavior when not set
     },
+    trust: {
+        type: 'boolean',
+        default: false, // Default is to require confirmation for setup commands
+    },
+    worktreeSubfolder: {
+        type: 'boolean',
+        default: false, // Default is sibling directory behavior (my-app-feature)
+        // When true: my-app-worktrees/feature subfolder pattern
+    },
 };
 const config = new Conf({
     projectName: packageName, // Use the actual package name
@@ -76,4 +85,22 @@ export function setDefaultWorktreePath(worktreePath) {
 // Function to clear the default worktree path
 export function clearDefaultWorktreePath() {
     config.delete('defaultWorktreePath');
+}
+// Function to get the trust setting (bypass setup command confirmation)
+export function getTrust() {
+    return config.get('trust') ?? false;
+}
+// Function to set the trust setting
+export function setTrust(trust) {
+    config.set('trust', trust);
+}
+// Function to get the worktree subfolder setting
+// When true: creates worktrees in my-app-worktrees/feature pattern
+// When false: creates worktrees as my-app-feature siblings
+export function getWorktreeSubfolder() {
+    return config.get('worktreeSubfolder') ?? false;
+}
+// Function to set the worktree subfolder setting
+export function setWorktreeSubfolder(subfolder) {
+    config.set('worktreeSubfolder', subfolder);
 }
