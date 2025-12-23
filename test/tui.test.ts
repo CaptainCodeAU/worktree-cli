@@ -9,6 +9,21 @@ import type { WorktreeInfo } from '../src/utils/git.js';
  * inject feature to programmatically provide answers to prompts.
  */
 
+// Mock the config module to ensure trust mode is disabled for tests
+vi.mock('../src/config.js', () => ({
+    getTrust: () => false,
+    getSubfolder: () => false,
+    getDefaultEditor: () => 'cursor',
+    getGitProvider: () => 'gh',
+    getDefaultWorktreePath: () => undefined,
+    setDefaultEditor: vi.fn(),
+    setGitProvider: vi.fn(),
+    setDefaultWorktreePath: vi.fn(),
+    clearDefaultWorktreePath: vi.fn(),
+    getConfigPath: () => '/mock/config/path',
+    shouldSkipEditor: () => false,
+}));
+
 // Mock the git utilities before importing TUI functions
 vi.mock('../src/utils/git.js', async () => {
     const mockWorktrees: WorktreeInfo[] = [

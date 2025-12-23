@@ -30,7 +30,7 @@ async function createTestRepo(): Promise<TestContext> {
     await mkdir(repoDir, { recursive: true });
 
     // Initialize git repo
-    await execa('git', ['init'], { cwd: repoDir });
+    await execa('git', ['init', '-b', 'main'], { cwd: repoDir });
     await execa('git', ['config', 'user.email', 'test@test.com'], { cwd: repoDir });
     await execa('git', ['config', 'user.name', 'Test User'], { cwd: repoDir });
 
@@ -266,10 +266,16 @@ describe('Bare Repository Support', () => {
         const worktreePath = join(ctx.testDir, 'bare-worktree');
 
         // Create worktree from bare repo
+        // Bare repos don't have a working tree, so we need to specify the branch explicitly
         const result = await execa('git', ['worktree', 'add', worktreePath, 'main'], {
             cwd: bareRepoDir,
             reject: false,
         });
+
+        // If the command failed, log the error for debugging
+        if (result.exitCode !== 0) {
+            console.log('Git worktree add failed:', result.stderr);
+        }
 
         expect(result.exitCode).toBe(0);
 

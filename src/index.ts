@@ -12,6 +12,7 @@ import { configHandler } from "./commands/config.js";
 import { prWorktreeHandler } from "./commands/pr.js";
 import { openWorktreeHandler } from "./commands/open.js";
 import { extractWorktreeHandler } from "./commands/extract.js";
+import { statusWorktreesHandler } from "./commands/status.js";
 
 const program = new Command();
 
@@ -74,6 +75,11 @@ program
   .alias("ls")
   .description("List all existing worktrees for this repository.")
   .action(listWorktreesHandler);
+
+program
+  .command("status")
+  .description("Show status of all worktrees including git state (clean/dirty, ahead/behind).")
+  .action(statusWorktreesHandler);
 
 program
   .command("remove")
